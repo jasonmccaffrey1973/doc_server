@@ -1,0 +1,57 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+  me: User @field(resolver: "App\\GraphQL\\Queries\\MeQuery")
+  navigation(token: String!): [NavigationItem!]! @field(resolver: "App\\GraphQL\\Queries\\NavigationQuery")
+}
+
+type Mutation {
+  register(
+    name: String!
+    username: String!
+    email: String!
+    password: String!
+    password_confirmation: String!
+    device_name: String
+  ): AuthPayload!
+    @field(resolver: "App\\GraphQL\\Mutations\\RegisterMutation")
+
+  login(
+    login: String!
+    password: String!
+    device_name: String
+  ): AuthPayload!
+    @field(resolver: "App\\GraphQL\\Mutations\\LoginMutation")
+
+  logout: Boolean! @field(resolver: "App\\GraphQL\\Mutations\\LogoutMutation")
+}
+
+type User {
+    id: ID!
+    name: String!
+  username: String
+    email: String!
+    email_verified_at: DateTime
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type NavigationItem {
+  name: String!
+  path: String
+  visits: Int!
+  itemList: [NavigationLink!]
+}
+
+type NavigationLink {
+  name: String!
+  path: String!
+  visits: Int!
+  itemList: [NavigationLink!]
+}

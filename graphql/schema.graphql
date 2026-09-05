@@ -1,9 +1,23 @@
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar JSON @scalar(class: "App\\GraphQL\\Scalars\\JsonScalar")
 
 type Query {
   me: User @field(resolver: "App\\GraphQL\\Queries\\MeQuery")
   navigation(token: String!): [NavigationItem!]! @field(resolver: "App\\GraphQL\\Queries\\NavigationQuery")
+
+  courses(status: String, limit: Int = 25, offset: Int = 0): [Course!]!
+    @field(resolver: "App\\GraphQL\\Queries\\CoursesQuery")
+  course(id: ID!): Course @field(resolver: "App\\GraphQL\\Queries\\CourseQuery")
+
+  lessons(search: String, limit: Int = 25, offset: Int = 0): [Lesson!]!
+    @field(resolver: "App\\GraphQL\\Queries\\LessonsQuery")
+  lesson(id: ID!): Lesson @field(resolver: "App\\GraphQL\\Queries\\LessonQuery")
+
+  courseLessons(course_id: ID!): [CourseLesson!]!
+    @field(resolver: "App\\GraphQL\\Queries\\CourseLessonsQuery")
+  chapterLessons(chapter_id: ID!): [ChapterLesson!]!
+    @field(resolver: "App\\GraphQL\\Queries\\ChapterLessonsQuery")
 }
 
 type Mutation {
@@ -25,6 +39,34 @@ type Mutation {
     @field(resolver: "App\\GraphQL\\Mutations\\LoginMutation")
 
   logout: Boolean! @field(resolver: "App\\GraphQL\\Mutations\\LogoutMutation")
+
+  createCourse(input: CreateCourseInput!): Course!
+    @field(resolver: "App\\GraphQL\\Mutations\\CreateCourseMutation")
+  updateCourse(id: ID!, input: UpdateCourseInput!): Course!
+    @field(resolver: "App\\GraphQL\\Mutations\\UpdateCourseMutation")
+  deleteCourse(id: ID!): Boolean! @field(resolver: "App\\GraphQL\\Mutations\\DeleteCourseMutation")
+
+  createChapter(input: CreateChapterInput!): Chapter!
+    @field(resolver: "App\\GraphQL\\Mutations\\CreateChapterMutation")
+  updateChapter(id: ID!, input: UpdateChapterInput!): Chapter!
+    @field(resolver: "App\\GraphQL\\Mutations\\UpdateChapterMutation")
+  deleteChapter(id: ID!): Boolean! @field(resolver: "App\\GraphQL\\Mutations\\DeleteChapterMutation")
+
+  createLesson(input: CreateLessonInput!): Lesson!
+    @field(resolver: "App\\GraphQL\\Mutations\\CreateLessonMutation")
+  updateLesson(id: ID!, input: UpdateLessonInput!): Lesson!
+    @field(resolver: "App\\GraphQL\\Mutations\\UpdateLessonMutation")
+  deleteLesson(id: ID!): Boolean! @field(resolver: "App\\GraphQL\\Mutations\\DeleteLessonMutation")
+
+  addLessonToCourse(input: AddLessonToCourseInput!): CourseLesson!
+    @field(resolver: "App\\GraphQL\\Mutations\\AddLessonToCourseMutation")
+  updateCourseLesson(id: ID!, input: UpdateCourseLessonInput!): CourseLesson!
+    @field(resolver: "App\\GraphQL\\Mutations\\UpdateCourseLessonMutation")
+
+  placeCourseLessonInChapter(input: PlaceCourseLessonInChapterInput!): ChapterLesson!
+    @field(resolver: "App\\GraphQL\\Mutations\\PlaceCourseLessonInChapterMutation")
+  removeCourseLessonFromChapter(chapter_id: ID!, course_lesson_id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Mutations\\RemoveCourseLessonFromChapterMutation")
 }
 
 type User {
@@ -54,4 +96,112 @@ type NavigationLink {
   path: String!
   visits: Int!
   itemList: [NavigationLink!]
+}
+
+type Course {
+  id: ID!
+  title: String!
+  description: String
+  status: String!
+  chapters: [Chapter!]! @hasMany(relation: "chapters")
+  courseLessons: [CourseLesson!]! @hasMany(relation: "courseLessons")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type Chapter {
+  id: ID!
+  course_id: ID!
+  title: String!
+  description: String
+  position: Int!
+  course: Course! @belongsTo(relation: "course")
+  chapterLessons: [ChapterLesson!]! @hasMany(relation: "chapterLessons")
+  courseLessons: [CourseLesson!]! @belongsToMany(relation: "courseLessons")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type Lesson {
+  id: ID!
+  title: String!
+  content: JSON!
+  content_version: Int!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type CourseLesson {
+  id: ID!
+  course_id: ID!
+  lesson_id: ID!
+  title: String!
+  content: JSON!
+  source_version: Int!
+  course: Course! @belongsTo(relation: "course")
+  lesson: Lesson! @belongsTo(relation: "lesson")
+  chapters: [Chapter!]! @belongsToMany(relation: "chapters")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type ChapterLesson {
+  chapter_id: ID!
+  course_lesson_id: ID!
+  position: Int!
+  chapter: Chapter! @belongsTo(relation: "chapter")
+  courseLesson: CourseLesson! @belongsTo(relation: "courseLesson")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+input CreateCourseInput {
+  title: String!
+  description: String
+  status: String
+}
+
+input UpdateCourseInput {
+  title: String
+  description: String
+  status: String
+}
+
+input CreateChapterInput {
+  course_id: ID!
+  title: String!
+  description: String
+  position: Int!
+}
+
+input UpdateChapterInput {
+  title: String
+  description: String
+  position: Int
+}
+
+input CreateLessonInput {
+  title: String!
+  content: JSON
+}
+
+input UpdateLessonInput {
+  title: String
+  content: JSON
+}
+
+input AddLessonToCourseInput {
+  course_id: ID!
+  lesson_id: ID!
+}
+
+input UpdateCourseLessonInput {
+  title: String
+  content: JSON
+}
+
+input PlaceCourseLessonInChapterInput {
+  chapter_id: ID!
+  course_lesson_id: ID!
+  position: Int!
 }

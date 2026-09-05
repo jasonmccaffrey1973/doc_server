@@ -137,7 +137,18 @@ The GraphQL schema is defined in `graphql/schema.graphql`. Common operations inc
 - `me`
 - `navigation`
 
+LMS authoring operations now available include:
+
+- Queries: `courses`, `course`, `lessons`, `lesson`, `courseLessons`, `chapterLessons`
+- Mutations: `createCourse`, `updateCourse`, `deleteCourse`
+- Mutations: `createChapter`, `updateChapter`, `deleteChapter`
+- Mutations: `createLesson`, `updateLesson`, `deleteLesson`
+- Mutations: `addLessonToCourse`, `updateCourseLesson`
+- Mutations: `placeCourseLessonInChapter`, `removeCourseLessonFromChapter`
+
 Open GraphiQL to explore the API during development.
+
+For copy/paste request examples and workflow order, see `graphql/graphiql-examples.md`.
 
 ## Testing
 

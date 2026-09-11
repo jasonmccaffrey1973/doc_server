@@ -566,4 +566,15 @@ return [
          */
         'driver' => ApolloTracing::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Multipart Form Data
+    |--------------------------------------------------------------------------
+    |
+    | Support for file uploads via multipart form data (required for file uploads).
+    |
+    */
+
+    'multipart' => true,
 ];

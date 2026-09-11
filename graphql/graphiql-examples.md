@@ -410,6 +410,108 @@ mutation DeleteLesson {
 }
 ```
 
+## Media management
+
+### 1) Configure storage location (optional)
+
+```graphql
+mutation ConfigureStorageLocation {
+  configureStorageLocation(
+    input: {
+      name: "Local Storage"
+      type: "local"
+      isDefault: true
+    }
+  ) {
+    id
+    name
+    type
+    is_default
+    created_at
+  }
+}
+```
+
+You can also configure cloud storage:
+
+```graphql
+mutation ConfigureS3Storage {
+  configureStorageLocation(
+    input: {
+      name: "AWS S3"
+      type: "s3"
+      configuration: {
+        bucket: "my-bucket"
+        region: "us-east-1"
+        key: "AKIA..."
+        secret: "..."
+      }
+      isDefault: false
+    }
+  ) {
+    id
+    name
+    type
+  }
+}
+```
+
+### 2) Upload single media file
+
+In GraphiQL, use the file picker to select a file, then run:
+
+```graphql
+mutation UploadMedia {
+  uploadMedia(
+    input: {
+      file: null
+      mediaType: "image"
+      storageLocationId: null
+    }
+  ) {
+    id
+    filename
+    original_name
+    media_type
+    size
+    url
+    created_at
+  }
+}
+```
+
+Supported media types: `image`, `video`, `audio`
+
+### 3) Bulk upload media files
+
+```graphql
+mutation BulkUploadMedia {
+  bulkUploadMedia(
+    input: {
+      files: [null]
+      mediaType: "image"
+      storageLocationId: null
+    }
+  ) {
+    id
+    filename
+    original_name
+    url
+    size
+  }
+}
+```
+
+Max 50 files per request.
+
+### 4) Delete media
+
+```graphql
+mutation DeleteMedia {
+  deleteMedia(id: "MEDIA_ID")
+}
+```
+
 ## Logout
 
 ```graphql

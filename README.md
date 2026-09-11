@@ -146,6 +146,12 @@ LMS authoring operations now available include:
 - Mutations: `addLessonToCourse`, `updateCourseLesson`
 - Mutations: `placeCourseLessonInChapter`, `removeCourseLessonFromChapter`
 
+Media management operations now available include:
+
+- Mutations: `uploadMedia`, `bulkUploadMedia`, `deleteMedia`, `configureStorageLocation`
+- Supports local filesystem, AWS S3, and Google Cloud Storage
+- Media types: image, video, audio
+
 Open GraphiQL to explore the API during development.
 
 For copy/paste request examples and workflow order, see `graphql/graphiql-examples.md`.

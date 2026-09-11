@@ -1,6 +1,7 @@
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 scalar JSON @scalar(class: "App\\GraphQL\\Scalars\\JsonScalar")
+scalar Upload @scalar(class: "App\\GraphQL\\Scalars\\Upload")
 
 type Query {
   me: User @field(resolver: "App\\GraphQL\\Queries\\MeQuery")
@@ -67,6 +68,15 @@ type Mutation {
     @field(resolver: "App\\GraphQL\\Mutations\\PlaceCourseLessonInChapterMutation")
   removeCourseLessonFromChapter(chapter_id: ID!, course_lesson_id: ID!): Boolean!
     @field(resolver: "App\\GraphQL\\Mutations\\RemoveCourseLessonFromChapterMutation")
+
+  uploadMedia(input: UploadMediaInput!): Media!
+    @field(resolver: "App\\GraphQL\\Mutations\\UploadMediaMutation")
+  bulkUploadMedia(input: BulkUploadMediaInput!): [Media!]!
+    @field(resolver: "App\\GraphQL\\Mutations\\BulkUploadMediaMutation")
+  deleteMedia(id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Mutations\\DeleteMediaMutation")
+  configureStorageLocation(input: ConfigureStorageLocationInput!): StorageLocation!
+    @field(resolver: "App\\GraphQL\\Mutations\\ConfigureStorageLocationMutation")
 }
 
 type User {
@@ -155,6 +165,32 @@ type ChapterLesson {
   updated_at: DateTime!
 }
 
+type Media {
+  id: ID!
+  filename: String!
+  original_name: String!
+  media_type: String!
+  size: Int!
+  path: String!
+  url: String!
+  storage_location_id: ID
+  storageLocation: StorageLocation
+  user_id: ID
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type StorageLocation {
+  id: ID!
+  name: String!
+  type: String!
+  is_default: Boolean!
+  configuration: JSON
+  media: [Media!]! @hasMany(relation: "media")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
 input CreateCourseInput {
   title: String!
   description: String
@@ -204,4 +240,23 @@ input PlaceCourseLessonInChapterInput {
   chapter_id: ID!
   course_lesson_id: ID!
   position: Int!
+}
+
+input UploadMediaInput {
+  file: Upload!
+  mediaType: String!
+  storageLocationId: ID
+}
+
+input BulkUploadMediaInput {
+  files: [Upload!]!
+  mediaType: String!
+  storageLocationId: ID
+}
+
+input ConfigureStorageLocationInput {
+  name: String!
+  type: String!
+  configuration: JSON
+  isDefault: Boolean
 }

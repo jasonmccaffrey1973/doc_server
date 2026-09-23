@@ -70,8 +70,26 @@ input BulkUploadMediaInput {
 }
 ```
 
-##### `deleteMedia(id: ID!): Boolean!`
-Delete a media file by ID.
+##### `deleteMedia(ids: [String!]!): DeleteResult!`
+Delete one media file by passing a single ID, or multiple files by passing an array of IDs. The result includes `success` and `deletedCount`.
+
+```graphql
+mutation {
+  deleteMedia(ids: "MEDIA_ID") {
+    success
+    deletedCount
+  }
+}
+```
+
+```graphql
+mutation {
+  deleteMedia(ids: ["MEDIA_ID_1", "MEDIA_ID_2"]) {
+    success
+    deletedCount
+  }
+}
+```
 
 ##### `configureStorageLocation(input: ConfigureStorageLocationInput!): StorageLocation!`
 Configure a new storage location.

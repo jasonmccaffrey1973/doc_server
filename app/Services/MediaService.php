@@ -17,13 +17,15 @@ class MediaService
      * @param string $mediaType
      * @param ?string $storageLocationId
      * @param ?string $userId
+     * @param ?string $altText
      * @return Media
      */
     public function uploadMedia(
         UploadedFile $file,
         string $mediaType,
         ?string $storageLocationId = null,
-        ?string $userId = null
+        ?string $userId = null,
+        ?string $altText = null
     ): Media {
         $storageLocation = $storageLocationId
             ? StorageLocation::findOrFail($storageLocationId)
@@ -39,8 +41,10 @@ class MediaService
             'filename' => Str::random(32) . '.' . $file->getClientOriginalExtension(),
             'original_name' => $file->getClientOriginalName(),
             'media_type' => $mediaType,
+            'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
             'path' => $path,
+            'alt_text' => $altText,
             'storage_location_id' => $storageLocation->id,
             'user_id' => $userId,
         ]);
@@ -53,19 +57,90 @@ class MediaService
      * @param string $mediaType
      * @param ?string $storageLocationId
      * @param ?string $userId
+     * @param ?string $altText
      * @return array<Media>
      */
     public function bulkUploadMedia(
         array $files,
         string $mediaType,
         ?string $storageLocationId = null,
-        ?string $userId = null
+        ?string $userId = null,
+        ?string $altText = null
     ): array {
         $media = [];
         foreach ($files as $file) {
-            $media[] = $this->uploadMedia($file, $mediaType, $storageLocationId, $userId);
+            $media[] = $this->uploadMedia($file, $mediaType, $storageLocationId, $userId, $altText);
         }
         return $media;
+    }
+
+    /**
+     * Upload media from a URL.
+     *
+     * @param string $url
+     * @param string $mediaType
+     * @param ?string $storageLocationId
+     * @param ?string $userId
+     * @param ?string $altText
+     * @return Media
+     */
+    public function uploadMediaFromUrl(
+        string $url,
+        string $mediaType,
+        ?string $storageLocationId = null,
+        ?string $userId = null,
+        ?string $altText = null
+    ): Media {
+        $storageLocation = $storageLocationId
+            ? StorageLocation::findOrFail($storageLocationId)
+            : StorageLocation::getDefault();
+
+        if (!$storageLocation) {
+            throw new \Exception('No default storage location configured');
+        }
+
+        // Download the file from URL
+        $contents = file_get_contents($url);
+        if ($contents === false) {
+            throw new \Exception("Failed to download file from URL: {$url}");
+        }
+
+        // Get filename from URL
+        $urlPath = parse_url($url, PHP_URL_PATH);
+        $filename = basename($urlPath) ?: 'downloaded-file';
+        $extension = pathinfo($filename, PATHINFO_EXTENSION) ?: 'bin';
+
+        // Create a temporary file
+        $tempPath = tempnam(sys_get_temp_dir(), 'media-');
+        file_put_contents($tempPath, $contents);
+
+        // Get MIME type
+        $mimeType = mime_content_type($tempPath) ?: 'application/octet-stream';
+
+        // Store the file
+        $path = "media/{$mediaType}/" . date('Y/m/d') . '/' . Str::random(32) . '.' . $extension;
+        
+        match ($storageLocation->type) {
+            'local' => Storage::disk('public')->put($path, $contents),
+            's3' => Storage::disk('s3')->put($path, $contents, 'public'),
+            'gcs' => Storage::disk('gcs')->put($path, $contents, 'public'),
+            default => throw new \Exception('Unsupported storage type'),
+        };
+
+        // Clean up temp file
+        unlink($tempPath);
+
+        return Media::create([
+            'filename' => basename($path),
+            'original_name' => $filename,
+            'media_type' => $mediaType,
+            'mime_type' => $mimeType,
+            'size' => strlen($contents),
+            'path' => $path,
+            'alt_text' => $altText,
+            'storage_location_id' => $storageLocation->id,
+            'user_id' => $userId,
+        ]);
     }
 
     /**
@@ -109,7 +184,7 @@ class MediaService
      */
     private function storeLocal(UploadedFile $file, string $path): string
     {
-        $disk = Storage::disk('local');
+        $disk = Storage::disk('public');
         $disk->putFileAs(dirname($path), $file, basename($path));
         return $path;
     }
@@ -144,7 +219,7 @@ class MediaService
         }
 
         $disk = match ($storageLocation->type) {
-            'local' => Storage::disk('local'),
+            'local' => Storage::disk('public'),
             's3' => Storage::disk('s3'),
             'gcs' => Storage::disk('gcs'),
             default => null,

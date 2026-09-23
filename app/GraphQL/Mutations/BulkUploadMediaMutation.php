@@ -12,22 +12,24 @@ class BulkUploadMediaMutation
     public function __construct(private MediaService $mediaService) {}
 
     /**
-     * @param array{input: array{files: array, mediaType: string, storageLocationId?: string}} $args
+     * @param array{kind: string, files: array, altText?: string, storageLocation?: string} $args
      */
     public function __invoke(null $_, array $args): array
     {
-        Validator::make($args['input'], [
+        Validator::make($args, [
             'files' => ['required', 'array', 'min:1', 'max:50'],
             'files.*' => ['required', 'file', 'max:512000'], // 500MB max per file
-            'mediaType' => ['required', 'in:image,video,audio'],
-            'storageLocationId' => ['nullable', 'exists:storage_locations,id'],
+            'kind' => ['required', 'in:image,video,audio'],
+            'storageLocation' => ['nullable', 'exists:storage_locations,id'],
+            'altText' => ['nullable', 'string', 'max:500'],
         ])->validate();
 
         return $this->mediaService->bulkUploadMedia(
-            files: $args['input']['files'],
-            mediaType: $args['input']['mediaType'],
-            storageLocationId: $args['input']['storageLocationId'] ?? null,
-            userId: Auth::id()
+            files: $args['files'],
+            mediaType: $args['kind'],
+            storageLocationId: $args['storageLocation'] ?? null,
+            userId: Auth::id(),
+            altText: $args['altText'] ?? null
         );
     }
 }

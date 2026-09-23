@@ -412,49 +412,27 @@ mutation DeleteLesson {
 
 ## Media management
 
-### 1) Configure storage location (optional)
+### 1) List media by kind
 
 ```graphql
-mutation ConfigureStorageLocation {
-  configureStorageLocation(
-    input: {
-      name: "Local Storage"
-      type: "local"
-      isDefault: true
+query ListMedia {
+  listMedia(kind: "image", limit: 25, offset: 0) {
+    items {
+      id
+      kind
+      name
+      url
+      mimeType
+      size
+      altText
+      createdAt
     }
-  ) {
-    id
-    name
-    type
-    is_default
-    created_at
+    total
   }
 }
 ```
 
-You can also configure cloud storage:
-
-```graphql
-mutation ConfigureS3Storage {
-  configureStorageLocation(
-    input: {
-      name: "AWS S3"
-      type: "s3"
-      configuration: {
-        bucket: "my-bucket"
-        region: "us-east-1"
-        key: "AKIA..."
-        secret: "..."
-      }
-      isDefault: false
-    }
-  ) {
-    id
-    name
-    type
-  }
-}
-```
+Supported kinds: `image`, `video`, `audio`. Omit `kind` to list all media types.
 
 ### 2) Upload single media file
 
@@ -463,54 +441,96 @@ In GraphiQL, use the file picker to select a file, then run:
 ```graphql
 mutation UploadMedia {
   uploadMedia(
-    input: {
-      file: null
-      mediaType: "image"
-      storageLocationId: null
-    }
+    kind: "image"
+    file: null
+    altText: "Alternative text for accessibility"
+    storageLocation: null
   ) {
     id
-    filename
-    original_name
-    media_type
-    size
+    kind
+    name
     url
-    created_at
+    mimeType
+    size
+    altText
+    createdAt
   }
 }
 ```
 
-Supported media types: `image`, `video`, `audio`
+Supported kinds: `image`, `video`, `audio`. Leave `storageLocation` null to use default storage.
 
-### 3) Bulk upload media files
+### 3) Upload media from URL
+
+```graphql
+mutation UploadMediaFromUrl {
+  uploadMediaFromUrl(
+    kind: "image"
+    url: "https://example.com/image.jpg"
+    altText: "Downloaded image"
+    storageLocation: null
+  ) {
+    id
+    kind
+    name
+    url
+    mimeType
+    size
+    altText
+    createdAt
+  }
+}
+```
+
+### 4) Bulk upload media files
 
 ```graphql
 mutation BulkUploadMedia {
   bulkUploadMedia(
-    input: {
-      files: [null]
-      mediaType: "image"
-      storageLocationId: null
-    }
+    kind: "image"
+    files: [null, null]
+    altText: "Bulk uploaded images"
+    storageLocation: null
   ) {
     id
-    filename
-    original_name
+    kind
+    name
     url
+    mimeType
     size
+    createdAt
   }
 }
 ```
 
-Max 50 files per request.
+Max 50 files per request. Leave `storageLocation` null to use default storage.
 
-### 4) Delete media
+### 5) Delete media
 
 ```graphql
 mutation DeleteMedia {
-  deleteMedia(id: "MEDIA_ID")
+  deleteMedia(ids: ["MEDIA_ID_1", "MEDIA_ID_2"]) {
+    success
+    deletedCount
+  }
 }
 ```
+
+Delete one or multiple media files at once.
+For one item, GraphQL also accepts a single ID: `deleteMedia(ids: "MEDIA_ID")`.
+
+### 6) Update storage location
+
+```graphql
+mutation UpdateStorageLocation {
+  updateStorageLocation(location: "STORAGE_LOCATION_ID") {
+    success
+    location
+  }
+}
+```
+
+Set the default storage location for future uploads.
 
 ## Logout
 

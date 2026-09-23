@@ -34,8 +34,11 @@ const BULK_UPLOAD_MEDIA = gql`
 `;
 
 const DELETE_MEDIA = gql`
-  mutation DeleteMedia($id: ID!) {
-    deleteMedia(id: $id)
+  mutation DeleteMedia($ids: [String!]!) {
+    deleteMedia(ids: $ids) {
+      success
+      deletedCount
+    }
   }
 `;
 

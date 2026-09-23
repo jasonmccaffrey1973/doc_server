@@ -76,6 +76,24 @@ class StorageLocation extends Model
      */
     public static function getDefault(): ?static
     {
-        return static::where('is_default', true)->first();
+        $default = static::where('is_default', true)->first();
+
+        if ($default) {
+            return $default;
+        }
+
+        // In local or testing environments, auto-provision a default local storage location if none exists
+        if (app()->environment('local', 'testing')) {
+            return static::firstOrCreate(
+                ['name' => 'Default Local Storage'],
+                [
+                    'type' => 'local',
+                    'is_default' => true,
+                    'configuration' => null,
+                ]
+            );
+        }
+
+        return null;
     }
 }

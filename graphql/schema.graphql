@@ -19,6 +19,9 @@ type Query {
     @field(resolver: "App\\GraphQL\\Queries\\CourseLessonsQuery")
   chapterLessons(chapter_id: ID!): [ChapterLesson!]!
     @field(resolver: "App\\GraphQL\\Queries\\ChapterLessonsQuery")
+
+  listMedia(kind: String, limit: Int, offset: Int): MediaConnection!
+    @field(resolver: "App\\GraphQL\\Queries\\ListMediaQuery")
 }
 
 type Mutation {
@@ -69,14 +72,16 @@ type Mutation {
   removeCourseLessonFromChapter(chapter_id: ID!, course_lesson_id: ID!): Boolean!
     @field(resolver: "App\\GraphQL\\Mutations\\RemoveCourseLessonFromChapterMutation")
 
-  uploadMedia(input: UploadMediaInput!): Media!
+  uploadMedia(kind: String!, file: Upload!, altText: String, storageLocation: String): Media!
     @field(resolver: "App\\GraphQL\\Mutations\\UploadMediaMutation")
-  bulkUploadMedia(input: BulkUploadMediaInput!): [Media!]!
+  uploadMediaFromUrl(kind: String!, url: String!, altText: String, storageLocation: String): Media!
+    @field(resolver: "App\\GraphQL\\Mutations\\UploadMediaFromUrlMutation")
+  bulkUploadMedia(kind: String!, files: [Upload!]!, altText: String, storageLocation: String): [Media!]!
     @field(resolver: "App\\GraphQL\\Mutations\\BulkUploadMediaMutation")
-  deleteMedia(id: ID!): Boolean!
+  deleteMedia(ids: [String!]!): DeleteResult!
     @field(resolver: "App\\GraphQL\\Mutations\\DeleteMediaMutation")
-  configureStorageLocation(input: ConfigureStorageLocationInput!): StorageLocation!
-    @field(resolver: "App\\GraphQL\\Mutations\\ConfigureStorageLocationMutation")
+  updateStorageLocation(location: String!): StorageResult!
+    @field(resolver: "App\\GraphQL\\Mutations\\UpdateStorageLocationMutation")
 }
 
 type User {
@@ -166,29 +171,29 @@ type ChapterLesson {
 }
 
 type Media {
-  id: ID!
-  filename: String!
-  original_name: String!
-  media_type: String!
-  size: Int!
-  path: String!
+  id: String!
+  kind: String!
+  name: String!
   url: String!
-  storage_location_id: ID
-  storageLocation: StorageLocation
-  user_id: ID
-  created_at: DateTime!
-  updated_at: DateTime!
+  mimeType: String!
+  size: Int!
+  altText: String
+  createdAt: String!
 }
 
-type StorageLocation {
-  id: ID!
-  name: String!
-  type: String!
-  is_default: Boolean!
-  configuration: JSON
-  media: [Media!]! @hasMany(relation: "media")
-  created_at: DateTime!
-  updated_at: DateTime!
+type MediaConnection {
+  items: [Media!]!
+  total: Int!
+}
+
+type DeleteResult {
+  success: Boolean!
+  deletedCount: Int!
+}
+
+type StorageResult {
+  success: Boolean!
+  location: String!
 }
 
 input CreateCourseInput {
@@ -240,23 +245,4 @@ input PlaceCourseLessonInChapterInput {
   chapter_id: ID!
   course_lesson_id: ID!
   position: Int!
-}
-
-input UploadMediaInput {
-  file: Upload!
-  mediaType: String!
-  storageLocationId: ID
-}
-
-input BulkUploadMediaInput {
-  files: [Upload!]!
-  mediaType: String!
-  storageLocationId: ID
-}
-
-input ConfigureStorageLocationInput {
-  name: String!
-  type: String!
-  configuration: JSON
-  isDefault: Boolean
 }

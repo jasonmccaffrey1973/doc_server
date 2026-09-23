@@ -148,9 +148,11 @@ LMS authoring operations now available include:
 
 Media management operations now available include:
 
-- Mutations: `uploadMedia`, `bulkUploadMedia`, `deleteMedia`, `configureStorageLocation`
+- Queries: `listMedia`
+- Mutations: `uploadMedia`, `uploadMediaFromUrl`, `bulkUploadMedia`, `deleteMedia`, `updateStorageLocation`
 - Supports local filesystem, AWS S3, and Google Cloud Storage
 - Media types: image, video, audio
+- Media metadata: mimeType, size, altText
 
 Open GraphiQL to explore the API during development.
 

@@ -142,7 +142,7 @@ const useMediaManager = () => {
 
       try {
         await deleteMediaMutation({
-          variables: { id: mediaId },
+          variables: { ids: [mediaId] },
         });
       } catch (error) {
         console.error("Error deleting media:", error);

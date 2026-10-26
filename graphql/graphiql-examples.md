@@ -532,6 +532,249 @@ mutation UpdateStorageLocation {
 
 Set the default storage location for future uploads.
 
+## AI Video Studio
+
+These operations require the bearer token from the auth flow above. Projects and
+scenes are only visible to their owner.
+
+### 1) List projects
+
+```graphql
+query AiVideoProjects {
+  aiVideoProjects {
+    id
+    title
+    description
+    status
+    scenes_count
+    created_at
+  }
+}
+```
+
+### 2) Create a project
+
+```graphql
+mutation CreateAiVideoProject {
+  createAiVideoProject(
+    input: {
+      title: "Respectful Workplace Scenario"
+      description: "Short training video about responding to unwanted comments."
+    }
+  ) {
+    id
+    title
+    description
+    status
+  }
+}
+```
+
+### 3) Open a project and its scenes
+
+```graphql
+query AiVideoProject {
+  aiVideoProject(id: "PROJECT_ID") {
+    id
+    title
+    status
+    scenes {
+      id
+      title
+      position
+      script
+      visual_prompt
+      status
+      generationJobs {
+        id
+        status
+      }
+    }
+  }
+}
+```
+
+### 4) Create a scene
+
+```graphql
+mutation CreateAiVideoScene {
+  createAiVideoScene(
+    projectId: "PROJECT_ID"
+    input: {
+      title: "The employee raises a concern"
+      position: 1
+      script: "An employee tells their manager that unwanted comments have continued."
+      visual_prompt: "Quiet office, two coworkers speaking respectfully."
+      duration_seconds: 15
+      aspect_ratio: "16:9"
+    }
+  ) {
+    id
+    title
+    position
+    script
+    visual_prompt
+  }
+}
+```
+
+### 5) Update project details
+
+```graphql
+mutation UpdateAiVideoProject {
+  updateAiVideoProject(
+    id: "PROJECT_ID"
+    input: { title: "Respectful Workplace Training", status: "in_production" }
+  ) {
+    id
+    title
+    status
+  }
+}
+```
+
+### 6) Update a scene script or prompt
+
+```graphql
+mutation UpdateAiVideoScene {
+  updateAiVideoScene(
+    id: "SCENE_ID"
+    input: {
+      script: "The employee reports the repeated comments to their manager."
+      visual_prompt: "The manager listens attentively and takes notes."
+    }
+  ) {
+    id
+    script
+    visual_prompt
+    status
+  }
+}
+```
+
+### 7) Import a manually generated video
+
+In GraphiQL, use the file picker for the `video` upload, then run:
+
+```graphql
+mutation ImportAiVideo {
+  importAiVideo(sceneId: "SCENE_ID", video: null) {
+    id
+    status
+    provider
+    created_at
+  }
+}
+```
+
+The upload is staged privately and queued for import into the existing media
+library. Supported formats are MP4, QuickTime, and WebM; the configured default
+maximum size is 500 MB. Poll the returned job ID to check progress.
+
+### 8) Poll an import job
+
+```graphql
+query AiVideoGenerationJob {
+  aiVideoGenerationJob(id: "JOB_ID") {
+    id
+    status
+    error_message
+    started_at
+    finished_at
+  }
+}
+```
+
+### 9) Request an AI script draft (adapter not yet connected)
+
+```graphql
+mutation GenerateAiVideoScript {
+  generateAiVideoScript(
+    sceneId: "SCENE_ID"
+    brief: "Draft a concise workplace scenario about responding to repeated unwanted comments."
+  ) {
+    id
+    status
+  }
+}
+```
+
+The script-generation operation currently returns a validation error. Saving an
+OpenAI connection below only stores the credential; the script-generation
+adapter still needs to be connected before this operation can use it. Do not
+send provider API keys from the frontend.
+
+### 10) List providers and your configured connections
+
+```graphql
+query AiProviderSettings {
+  aiProviders {
+    id
+    key
+    name
+    capabilities
+    is_enabled
+  }
+  myAiProviderConnections {
+    id
+    label
+    provider {
+      key
+      name
+      capabilities
+    }
+    settings
+    is_active
+    has_credentials
+  }
+}
+```
+
+The initial catalog includes OpenAI, marked for script generation. This
+catalog entry stores credentials; it does not mean the script-generation
+provider adapter has been enabled.
+
+### 11) Save or replace your provider credentials
+
+Send the key only in an authenticated, encrypted HTTPS request. The server
+encrypts credentials at rest, and the mutation response never includes their
+values. Do not use production keys in a local GraphiQL session.
+
+```graphql
+mutation ConfigureAiProvider {
+  configureAiProvider(
+    providerKey: "openai"
+    label: "My OpenAI account"
+    credentials: { api_key: "YOUR_API_KEY" }
+    settings: { model: "YOUR_SUPPORTED_MODEL" }
+  ) {
+    id
+    label
+    provider {
+      key
+      name
+    }
+    settings
+    is_active
+    has_credentials
+  }
+}
+```
+
+Use a real server-side configuration flow for production; avoid saving a real
+key in browser history, screenshots, or shared GraphiQL sessions.
+
+### 12) Remove your provider connection
+
+```graphql
+mutation RemoveAiProviderConnection {
+  removeAiProviderConnection(id: "CONNECTION_ID")
+}
+```
+
+Connections belong to the signed-in user. Removing a connection deletes its
+encrypted credentials.
+
 ## Logout
 
 ```graphql

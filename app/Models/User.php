@@ -86,7 +86,22 @@ class User extends Authenticatable implements PasskeyUser
                     ['name' => 'Settings', 'path' => '/dashboard/settings', 'visits' => 0],
                 ],
             ],
-            ['name' => 'Testing', 'path' => '/test', 'visits' => 0],
+            [
+                'name' => 'Documents',
+                'visits' => 0,
+                'itemList' => [
+                    ['name' => 'Editor', 'path' => '/lesson-editor', 'visits' => 0],
+                    ['name' => 'Media Management', 'path' => '/media-manager', 'visits' => 0],
+                ],
+            ],
+            ['name' => 'Assets', 
+                'visits' => 0,
+                'itemList' => [
+                    ['name' => 'Characters', 'path' => '/assets/characters', 'visits' => 0],
+                    ['name' => 'Scenes', 'path' => '/assets/scenes', 'visits' => 0],
+                    ['name' => 'Equipment', 'path' => '/assets/equipment', 'visits' => 0],
+                ],
+            ]
         ];
 
         return array_values(array_filter($navigation, fn (array $item): bool => $this->canAccessNavigationItem($item)));

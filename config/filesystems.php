@@ -38,6 +38,12 @@ return [
             'report' => false,
         ],
 
+        'ai_video' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/ai-video'),
+            'throw' => true,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

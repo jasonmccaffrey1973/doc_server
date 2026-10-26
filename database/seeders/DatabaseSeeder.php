@@ -32,5 +32,7 @@ class DatabaseSeeder extends Seeder
                 'configuration' => null,
             ]
         );
+
+        $this->call(AiProviderSeeder::class);
     }
 }

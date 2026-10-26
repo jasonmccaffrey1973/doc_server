@@ -22,6 +22,17 @@ type Query {
 
   listMedia(kind: String, limit: Int, offset: Int): MediaConnection!
     @field(resolver: "App\\GraphQL\\Queries\\ListMediaQuery")
+
+  aiVideoProjects: [AiVideoProject!]!
+    @field(resolver: "App\\GraphQL\\Queries\\AiVideoProjectsQuery")
+  aiVideoProject(id: ID!): AiVideoProject
+    @field(resolver: "App\\GraphQL\\Queries\\AiVideoProjectQuery")
+  aiVideoGenerationJob(id: ID!): AiVideoGenerationJob
+    @field(resolver: "App\\GraphQL\\Queries\\AiVideoGenerationJobQuery")
+  aiProviders: [AiProvider!]!
+    @field(resolver: "App\\GraphQL\\Queries\\AiProvidersQuery")
+  myAiProviderConnections: [AiProviderConnection!]!
+    @field(resolver: "App\\GraphQL\\Queries\\MyAiProviderConnectionsQuery")
 }
 
 type Mutation {
@@ -82,6 +93,91 @@ type Mutation {
     @field(resolver: "App\\GraphQL\\Mutations\\DeleteMediaMutation")
   updateStorageLocation(location: String!): StorageResult!
     @field(resolver: "App\\GraphQL\\Mutations\\UpdateStorageLocationMutation")
+
+  createAiVideoProject(input: CreateAiVideoProjectInput!): AiVideoProject!
+    @field(resolver: "App\\GraphQL\\Mutations\\CreateAiVideoProjectMutation")
+  updateAiVideoProject(id: ID!, input: UpdateAiVideoProjectInput!): AiVideoProject!
+    @field(resolver: "App\\GraphQL\\Mutations\\UpdateAiVideoProjectMutation")
+  createAiVideoScene(projectId: ID!, input: CreateAiVideoSceneInput!): AiVideoScene!
+    @field(resolver: "App\\GraphQL\\Mutations\\CreateAiVideoSceneMutation")
+  updateAiVideoScene(id: ID!, input: UpdateAiVideoSceneInput!): AiVideoScene!
+    @field(resolver: "App\\GraphQL\\Mutations\\UpdateAiVideoSceneMutation")
+  importAiVideo(sceneId: ID!, video: Upload!): AiVideoGenerationJob!
+    @field(resolver: "App\\GraphQL\\Mutations\\ImportAiVideoMutation")
+  generateAiVideoScript(sceneId: ID!, brief: String!): AiVideoGenerationJob!
+    @field(resolver: "App\\GraphQL\\Mutations\\GenerateAiVideoScriptMutation")
+  configureAiProvider(
+    providerKey: String!
+    credentials: JSON!
+    label: String
+    settings: JSON
+  ): AiProviderConnection!
+    @field(resolver: "App\\GraphQL\\Mutations\\ConfigureAiProviderMutation")
+  removeAiProviderConnection(id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Mutations\\RemoveAiProviderConnectionMutation")
+}
+
+type AiProvider {
+  id: ID!
+  key: String!
+  name: String!
+  capabilities: JSON
+  is_enabled: Boolean!
+}
+
+type AiProviderConnection {
+  id: ID!
+  label: String
+  provider: AiProvider!
+  settings: JSON
+  is_active: Boolean!
+  has_credentials: Boolean!
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type AiVideoProject {
+  id: ID!
+  user_id: ID!
+  title: String!
+  description: String
+  status: String!
+  scenes_count: Int
+  scenes: [AiVideoScene!]! @hasMany(relation: "scenes")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type AiVideoScene {
+  id: ID!
+  ai_video_project_id: ID!
+  title: String!
+  position: Int!
+  script: String
+  visual_prompt: String
+  character_asset_id: ID
+  location_asset_id: ID
+  output_asset_id: ID
+  duration_seconds: Int!
+  aspect_ratio: String!
+  status: String!
+  generationJobs: [AiVideoGenerationJob!]! @hasMany(relation: "generationJobs")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type AiVideoGenerationJob {
+  id: ID!
+  ai_video_scene_id: ID!
+  provider: String!
+  status: String!
+  provider_job_id: String
+  parameters: JSON
+  error_message: String
+  started_at: DateTime
+  finished_at: DateTime
+  created_at: DateTime!
+  updated_at: DateTime!
 }
 
 type User {
@@ -245,4 +341,38 @@ input PlaceCourseLessonInChapterInput {
   chapter_id: ID!
   course_lesson_id: ID!
   position: Int!
+}
+
+input CreateAiVideoProjectInput {
+  title: String!
+  description: String
+}
+
+input UpdateAiVideoProjectInput {
+  title: String
+  description: String
+  status: String
+}
+
+input CreateAiVideoSceneInput {
+  title: String!
+  position: Int
+  script: String
+  visual_prompt: String
+  character_asset_id: ID
+  location_asset_id: ID
+  duration_seconds: Int
+  aspect_ratio: String
+}
+
+input UpdateAiVideoSceneInput {
+  title: String
+  position: Int
+  script: String
+  visual_prompt: String
+  character_asset_id: ID
+  location_asset_id: ID
+  duration_seconds: Int
+  aspect_ratio: String
+  status: String
 }

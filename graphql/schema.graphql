@@ -23,6 +23,9 @@ type Query {
   listMedia(kind: String, limit: Int, offset: Int): MediaConnection!
     @field(resolver: "App\\GraphQL\\Queries\\ListMediaQuery")
 
+  aiGeneratedAssets(type: String, limit: Int = 25, offset: Int = 0): AiGeneratedAssetConnection!
+    @field(resolver: "App\\GraphQL\\Queries\\AiGeneratedAssetsQuery")
+
   aiVideoProjects: [AiVideoProject!]!
     @field(resolver: "App\\GraphQL\\Queries\\AiVideoProjectsQuery")
   aiVideoProject(id: ID!): AiVideoProject
@@ -178,6 +181,26 @@ type AiVideoGenerationJob {
   finished_at: DateTime
   created_at: DateTime!
   updated_at: DateTime!
+}
+
+type AiGeneratedAssetConnection {
+  total: Int!
+  items: [AiGeneratedAsset!]!
+}
+
+type AiGeneratedAsset {
+  id: ID!
+  type: String!
+  name: String!
+  url: String!
+  mimeType: String
+  size: Int
+  altText: String
+  createdAt: DateTime
+  projectId: ID!
+  projectTitle: String!
+  sceneId: ID!
+  sceneTitle: String!
 }
 
 type User {

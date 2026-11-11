@@ -94,7 +94,7 @@ class User extends Authenticatable implements PasskeyUser
                     ['name' => 'Media Management', 'path' => '/media-manager', 'visits' => 0],
                 ],
             ],
-            ['name' => 'Assets', 
+            ['name' => 'Generated Assets', 
                 'visits' => 0,
                 'itemList' => [
                     ['name' => 'Characters', 'path' => '/assets/characters', 'visits' => 0],

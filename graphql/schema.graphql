@@ -36,6 +36,8 @@ type Query {
     @field(resolver: "App\\GraphQL\\Queries\\AiProvidersQuery")
   myAiProviderConnections: [AiProviderConnection!]!
     @field(resolver: "App\\GraphQL\\Queries\\MyAiProviderConnectionsQuery")
+  aiProviderConnections: [AiProviderConnection!]!
+    @field(resolver: "App\\GraphQL\\Queries\\MyAiProviderConnectionsQuery")
 }
 
 type Mutation {
@@ -118,6 +120,37 @@ type Mutation {
     @field(resolver: "App\\GraphQL\\Mutations\\ConfigureAiProviderMutation")
   removeAiProviderConnection(id: ID!): Boolean!
     @field(resolver: "App\\GraphQL\\Mutations\\RemoveAiProviderConnectionMutation")
+  createAIProviderConnection(input: CreateAIProviderConnectionInput!): AiProviderConnection!
+    @field(resolver: "App\\GraphQL\\Mutations\\CreateAIProviderConnectionMutation")
+  updateAIProviderConnection(id: ID!, input: UpdateAIProviderConnectionInput!): AiProviderConnection!
+    @field(resolver: "App\\GraphQL\\Mutations\\UpdateAIProviderConnectionMutation")
+  deleteAIProviderConnection(id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Mutations\\RemoveAiProviderConnectionMutation")
+}
+
+input AIProviderCredentialInput {
+  key: String!
+  value: String!
+}
+
+input CreateAIProviderConnectionInput {
+  providerId: ID!
+  name: String!
+  service: String!
+  baseUrl: String!
+  authType: String!
+  credentials: [AIProviderCredentialInput!]!
+  modelIds: [String!]!
+}
+
+input UpdateAIProviderConnectionInput {
+  providerId: ID
+  name: String
+  service: String
+  baseUrl: String
+  authType: String
+  credentials: [AIProviderCredentialInput!]
+  modelIds: [String!]
 }
 
 type AiProvider {
@@ -131,6 +164,17 @@ type AiProvider {
 type AiProviderConnection {
   id: ID!
   label: String
+  providerId: ID!
+  name: String!
+  service: String!
+  baseUrl: String!
+  authType: String!
+  modelIds: [String!]!
+  status: String!
+  hasCredentials: Boolean!
+  credentialKeys: [String!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   provider: AiProvider!
   settings: JSON
   is_active: Boolean!

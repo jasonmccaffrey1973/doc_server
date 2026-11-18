@@ -67,20 +67,6 @@ class AiProviderSeeder extends Seeder
                 'capabilities' => ['voice', 'music'],
                 'is_enabled' => true,
             ],
-            [
-                'key' => 'custom',
-                'name' => 'Custom provider',
-                'services' => ['text', 'image', 'video', 'voice', 'music'],
-                'default_base_url' => '',
-                'auth_type' => 'bearer',
-                'credential_fields' => [
-                    ['key' => 'token', 'label' => 'Bearer token', 'secret' => true],
-                ],
-                'credential_header' => null,
-                'api_key_url' => null,
-                'capabilities' => ['text', 'image', 'video', 'voice', 'music'],
-                'is_enabled' => true,
-            ],
         ];
 
         foreach ($providers as $provider) {

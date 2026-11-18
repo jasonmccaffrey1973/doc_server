@@ -34,6 +34,8 @@ type Query {
     @field(resolver: "App\\GraphQL\\Queries\\AiVideoGenerationJobQuery")
   aiProviders: [AiProvider!]!
     @field(resolver: "App\\GraphQL\\Queries\\AiProvidersQuery")
+  providers: [AiProvider!]!
+    @field(resolver: "App\\GraphQL\\Queries\\AiProvidersQuery")
   myAiProviderConnections: [AiProviderConnection!]!
     @field(resolver: "App\\GraphQL\\Queries\\MyAiProviderConnectionsQuery")
   aiProviderConnections: [AiProviderConnection!]!
@@ -126,6 +128,12 @@ type Mutation {
     @field(resolver: "App\\GraphQL\\Mutations\\UpdateAIProviderConnectionMutation")
   deleteAIProviderConnection(id: ID!): Boolean!
     @field(resolver: "App\\GraphQL\\Mutations\\RemoveAiProviderConnectionMutation")
+  testAIProviderConnection(id: ID, input: TestAIProviderConnectionInput!): AIProviderConnectionTestResult!
+    @field(resolver: "App\\GraphQL\\Mutations\\TestAIProviderConnectionMutation")
+  createAiProvider(input: CreateAiProviderInput!): AiProvider!
+    @field(resolver: "App\\GraphQL\\Mutations\\CreateAiProviderMutation")
+  addProvider(input: CreateAiProviderInput!): AiProvider!
+    @field(resolver: "App\\GraphQL\\Mutations\\CreateAiProviderMutation")
 }
 
 input AIProviderCredentialInput {
@@ -153,10 +161,49 @@ input UpdateAIProviderConnectionInput {
   modelIds: [String!]
 }
 
+input TestAIProviderConnectionInput {
+  providerId: ID!
+  name: String!
+  service: String!
+  baseUrl: String!
+  authType: String!
+  credentials: [AIProviderCredentialInput!]!
+  modelIds: [String!]!
+}
+
+input CredentialFieldInput {
+  key: String!
+  label: String!
+  secret: Boolean!
+}
+
+input CreateAiProviderInput {
+  key: String!
+  name: String!
+  services: [String!]!
+  defaultBaseUrl: String
+  authType: String!
+  credentialFields: [CredentialFieldInput!]!
+  credentialHeader: String
+  apiKeyUrl: String
+}
+
+type CredentialField {
+  key: String!
+  label: String!
+  secret: Boolean!
+}
+
 type AiProvider {
   id: ID!
   key: String!
   name: String!
+  services: [String!]!
+  defaultBaseUrl: String
+  authType: String!
+  credentialFields: [CredentialField!]!
+  credentialHeader: String
+  apiKeyUrl: String
   capabilities: JSON
   is_enabled: Boolean!
 }
@@ -181,6 +228,11 @@ type AiProviderConnection {
   has_credentials: Boolean!
   created_at: DateTime!
   updated_at: DateTime!
+}
+
+type AIProviderConnectionTestResult {
+  success: Boolean!
+  message: String!
 }
 
 type AiVideoProject {

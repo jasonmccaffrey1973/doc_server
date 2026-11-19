@@ -1,0 +1,52 @@
+input CreateCourseInput {
+  title: String!
+  description: String
+  status: String
+}
+
+input UpdateCourseInput {
+  title: String
+  description: String
+  status: String
+}
+
+input CreateChapterInput {
+  course_id: ID!
+  title: String!
+  description: String
+  position: Int!
+}
+
+input UpdateChapterInput {
+  title: String
+  description: String
+  position: Int
+}
+
+input CreateLessonInput {
+  title: String!
+  content: JSON
+}
+
+input UpdateLessonInput {
+  title: String
+  content: JSON
+}
+
+input AddLessonToCourseInput {
+  course_id: ID!
+  lesson_id: ID
+  title: String
+  content: JSON
+}
+
+input UpdateCourseLessonInput {
+  title: String
+  content: JSON
+}
+
+input PlaceCourseLessonInChapterInput {
+  chapter_id: ID!
+  course_lesson_id: ID!
+  position: Int
+}

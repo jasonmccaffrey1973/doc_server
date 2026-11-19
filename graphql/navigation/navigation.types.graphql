@@ -1,0 +1,13 @@
+type NavigationItem {
+  name: String!
+  path: String
+  visits: Int!
+  itemList: [NavigationLink!]
+}
+
+type NavigationLink {
+  name: String!
+  path: String!
+  visits: Int!
+  itemList: [NavigationLink!]
+}

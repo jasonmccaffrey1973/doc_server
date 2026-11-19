@@ -1,0 +1,81 @@
+type AiVideoProject {
+  id: ID!
+  user_id: ID!
+  title: String!
+  description: String
+  status: String!
+  scenes: [AiVideoScene!]! @hasMany(relation: "scenes")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type AiVideoScene {
+  id: ID!
+  project_id: ID!
+  sequence: Int!
+  title: String!
+  prompt: String!
+  script: String
+  video_url: String
+  status: String!
+  generationJobs: [AiVideoGenerationJob!]! @hasMany(relation: "generationJobs")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type AiVideoGenerationJob {
+  id: ID!
+  scene_id: ID!
+  type: String!
+  status: String!
+  result: JSON
+  error_message: String
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type AiGeneratedAsset {
+  id: ID!
+  scene_id: ID!
+  type: String!
+  status: String!
+  url: String
+  mimeType: String
+  size: Int
+  result: JSON
+  error_message: String
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type AiGeneratedAssetConnection {
+  items: [AiGeneratedAsset!]!
+  total: Int!
+}
+
+input CreateAiVideoProjectInput {
+  title: String!
+  description: String
+}
+
+input UpdateAiVideoProjectInput {
+  title: String
+  description: String
+  status: String
+}
+
+input CreateAiVideoSceneInput {
+  sequence: Int!
+  title: String!
+  prompt: String!
+  script: String
+}
+
+input UpdateAiVideoSceneInput {
+  sequence: Int
+  title: String
+  prompt: String
+  script: String
+  video_url: String
+  status: String
+}

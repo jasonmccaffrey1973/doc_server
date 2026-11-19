@@ -1,0 +1,10 @@
+extend type Query {
+  aiGeneratedAssets(type: String, limit: Int = 25, offset: Int = 0): AiGeneratedAssetConnection!
+    @field(resolver: "App\\GraphQL\\Ai\\Queries\\AiGeneratedAssetsQuery")
+  aiVideoProjects: [AiVideoProject!]!
+    @field(resolver: "App\\GraphQL\\Ai\\Queries\\AiVideoProjectsQuery")
+  aiVideoProject(id: ID!): AiVideoProject
+    @field(resolver: "App\\GraphQL\\Ai\\Queries\\AiVideoProjectQuery")
+  aiVideoGenerationJob(id: ID!): AiVideoGenerationJob
+    @field(resolver: "App\\GraphQL\\Ai\\Queries\\AiVideoGenerationJobQuery")
+}

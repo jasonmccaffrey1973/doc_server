@@ -1,0 +1,16 @@
+extend type Query {
+  courses(status: String, limit: Int = 25, offset: Int = 0): [Course!]!
+    @field(resolver: "App\\GraphQL\\Courses\\Queries\\CoursesQuery")
+  course(id: ID!): Course
+    @field(resolver: "App\\GraphQL\\Courses\\Queries\\CourseQuery")
+
+  lessons(search: String, limit: Int = 25, offset: Int = 0): [Lesson!]!
+    @field(resolver: "App\\GraphQL\\Courses\\Queries\\LessonsQuery")
+  lesson(id: ID!): Lesson
+    @field(resolver: "App\\GraphQL\\Courses\\Queries\\LessonQuery")
+
+  courseLessons(course_id: ID!): [CourseLesson!]!
+    @field(resolver: "App\\GraphQL\\Courses\\Queries\\CourseLessonsQuery")
+  chapterLessons(chapter_id: ID!): [ChapterLesson!]!
+    @field(resolver: "App\\GraphQL\\Courses\\Queries\\ChapterLessonsQuery")
+}

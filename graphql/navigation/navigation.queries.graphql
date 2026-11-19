@@ -1,0 +1,4 @@
+extend type Query {
+  navigation(token: String!): [NavigationItem!]!
+    @field(resolver: "App\\GraphQL\\Navigation\\Queries\\NavigationQuery")
+}

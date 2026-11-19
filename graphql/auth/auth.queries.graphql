@@ -1,0 +1,3 @@
+extend type Query {
+  me: User @field(resolver: "App\\GraphQL\\Auth\\Queries\\MeQuery")
+}

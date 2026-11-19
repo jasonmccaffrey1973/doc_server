@@ -1,0 +1,14 @@
+extend type Mutation {
+  createAiVideoProject(input: CreateAiVideoProjectInput!): AiVideoProject!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\CreateAiVideoProjectMutation")
+  updateAiVideoProject(id: ID!, input: UpdateAiVideoProjectInput!): AiVideoProject!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\UpdateAiVideoProjectMutation")
+  createAiVideoScene(projectId: ID!, input: CreateAiVideoSceneInput!): AiVideoScene!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\CreateAiVideoSceneMutation")
+  updateAiVideoScene(id: ID!, input: UpdateAiVideoSceneInput!): AiVideoScene!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\UpdateAiVideoSceneMutation")
+  importAiVideo(sceneId: ID!, video: Upload!): AiVideoGenerationJob!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\ImportAiVideoMutation")
+  generateAiVideoScript(sceneId: ID!, brief: String!): AiVideoGenerationJob!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\GenerateAiVideoScriptMutation")
+}

@@ -1,0 +1,25 @@
+type Media {
+  id: String!
+  kind: String!
+  name: String!
+  url: String!
+  mimeType: String!
+  size: Int!
+  altText: String
+  createdAt: String!
+}
+
+type MediaConnection {
+  items: [Media!]!
+  total: Int!
+}
+
+type DeleteResult {
+  success: Boolean!
+  deletedCount: Int!
+}
+
+type StorageResult {
+  success: Boolean!
+  location: String!
+}

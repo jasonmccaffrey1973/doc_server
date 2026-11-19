@@ -1,0 +1,32 @@
+extend type Mutation {
+  createCourse(input: CreateCourseInput!): Course!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\CreateCourseMutation")
+  updateCourse(id: ID!, input: UpdateCourseInput!): Course!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\UpdateCourseMutation")
+  deleteCourse(id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\DeleteCourseMutation")
+
+  createChapter(input: CreateChapterInput!): Chapter!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\CreateChapterMutation")
+  updateChapter(id: ID!, input: UpdateChapterInput!): Chapter!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\UpdateChapterMutation")
+  deleteChapter(id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\DeleteChapterMutation")
+
+  createLesson(input: CreateLessonInput!): Lesson!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\CreateLessonMutation")
+  updateLesson(id: ID!, input: UpdateLessonInput!): Lesson!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\UpdateLessonMutation")
+  deleteLesson(id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\DeleteLessonMutation")
+
+  addLessonToCourse(input: AddLessonToCourseInput!): CourseLesson!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\AddLessonToCourseMutation")
+  updateCourseLesson(id: ID!, input: UpdateCourseLessonInput!): CourseLesson!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\UpdateCourseLessonMutation")
+
+  placeCourseLessonInChapter(input: PlaceCourseLessonInChapterInput!): ChapterLesson!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\PlaceCourseLessonInChapterMutation")
+  removeCourseLessonFromChapter(chapter_id: ID!, course_lesson_id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Courses\\Mutations\\RemoveCourseLessonFromChapterMutation")
+}

@@ -1,0 +1,12 @@
+extend type Mutation {
+  createAiProvider(input: CreateAiProviderInput!): AiProvider!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\CreateAiProviderMutation")
+  createAIProviderConnection(input: CreateAIProviderConnectionInput!): AiProviderConnection!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\CreateAIProviderConnectionMutation")
+  updateAIProviderConnection(id: ID!, input: UpdateAIProviderConnectionInput!): AiProviderConnection!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\UpdateAIProviderConnectionMutation")
+  deleteAIProviderConnection(id: ID!): Boolean!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\DeleteAIProviderConnectionMutation")
+  testAIProviderConnection(id: ID, input: TestAIProviderConnectionInput!): AIProviderConnectionTestResult!
+    @field(resolver: "App\\GraphQL\\Ai\\Mutations\\TestAIProviderConnectionMutation")
+}

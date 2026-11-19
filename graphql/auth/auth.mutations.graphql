@@ -1,0 +1,21 @@
+extend type Mutation {
+  register(
+    name: String!
+    username: String!
+    email: String!
+    password: String!
+    password_confirmation: String!
+    device_name: String
+  ): AuthPayload!
+    @field(resolver: "App\\GraphQL\\Auth\\Mutations\\RegisterMutation")
+
+  login(
+    login: String!
+    password: String!
+    device_name: String
+  ): AuthPayload!
+    @field(resolver: "App\\GraphQL\\Auth\\Mutations\\LoginMutation")
+
+  logout: Boolean!
+    @field(resolver: "App\\GraphQL\\Auth\\Mutations\\LogoutMutation")
+}

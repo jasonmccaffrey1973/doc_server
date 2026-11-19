@@ -1,0 +1,6 @@
+extend type Query {
+  aiProviders: [AiProvider!]!
+    @field(resolver: "App\\GraphQL\\Ai\\Queries\\AiProvidersQuery")
+  aiProviderConnections: [AiProviderConnection!]!
+    @field(resolver: "App\\GraphQL\\Ai\\Queries\\AiProviderConnectionsQuery")
+}

@@ -1,0 +1,4 @@
+extend type Query {
+  listMedia(kind: String, limit: Int, offset: Int): MediaConnection!
+    @field(resolver: "App\\GraphQL\\Media\\Queries\\ListMediaQuery")
+}

@@ -130,31 +130,42 @@ See the following docs for more detail:
 
 ## GraphQL
 
-The GraphQL schema is defined in `graphql/schema.graphql`. Common operations include:
+The GraphQL schema is organized into modular domain directories under `graphql/` and imported into `graphql/schema.graphql`:
 
-- `login`
-- `logout`
-- `me`
-- `navigation`
+- `graphql/common/`: Shared scalar types (`DateTime`, `JSON`, `Upload`)
+- `graphql/auth/`: User queries, authentication mutations (`login`, `logout`, `register`, `me`)
+- `graphql/navigation/`: Navigation link queries
+- `graphql/courses/`: LMS authoring queries and mutations (courses, chapters, lessons)
+- `graphql/media/`: File and media management (local, S3, GCS)
+- `graphql/ai/`: AI video projects, scenes, generation jobs, and AI provider catalog/connections
 
-LMS authoring operations now available include:
+Resolvers are similarly structured under `App\GraphQL\<Domain>\` (`Queries` and `Mutations`).
+
+### Common Operations
+
+#### Authentication & Navigation
+
+- Queries: `me`, `navigation`
+- Mutations: `login`, `logout`, `register`
+
+#### Courses & LMS
 
 - Queries: `courses`, `course`, `lessons`, `lesson`, `courseLessons`, `chapterLessons`
-- Mutations: `createCourse`, `updateCourse`, `deleteCourse`
-- Mutations: `createChapter`, `updateChapter`, `deleteChapter`
-- Mutations: `createLesson`, `updateLesson`, `deleteLesson`
-- Mutations: `addLessonToCourse`, `updateCourseLesson`
-- Mutations: `placeCourseLessonInChapter`, `removeCourseLessonFromChapter`
+- Mutations: `createCourse`, `updateCourse`, `deleteCourse`, `createChapter`, `updateChapter`, `deleteChapter`, `createLesson`, `updateLesson`, `deleteLesson`, `addLessonToCourse`, `updateCourseLesson`, `placeCourseLessonInChapter`, `removeCourseLessonFromChapter`
 
-Media management operations now available include:
+#### Media Management
 
 - Queries: `listMedia`
 - Mutations: `uploadMedia`, `uploadMediaFromUrl`, `bulkUploadMedia`, `deleteMedia`, `updateStorageLocation`
 - Supports local filesystem, AWS S3, and Google Cloud Storage
-- Media types: image, video, audio
-- Media metadata: mimeType, size, altText
+- Media types: image, video, audio (with `mimeType`, `size`, `altText`)
 
-Open GraphiQL to explore the API during development.
+#### AI Video & AI Providers
+
+- Queries: `aiVideoProjects`, `aiVideoProject`, `aiVideoGenerationJob`, `aiGeneratedAssets`, `aiProviders`, `aiProviderConnections`
+- Mutations: `createAiVideoProject`, `updateAiVideoProject`, `createAiVideoScene`, `updateAiVideoScene`, `importAiVideo`, `generateAiVideoScript`, `createAiProvider`, `createAIProviderConnection`, `updateAIProviderConnection`, `deleteAIProviderConnection`, `testAIProviderConnection`
+
+Open GraphiQL (`/graphiql`) to explore the API during development.
 
 For copy/paste request examples and workflow order, see `graphql/graphiql-examples.md`.
 

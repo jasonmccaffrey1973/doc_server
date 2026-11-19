@@ -1,0 +1,57 @@
+type Course {
+  id: ID!
+  title: String!
+  description: String
+  status: String!
+  chapters: [Chapter!]! @hasMany(relation: "chapters")
+  courseLessons: [CourseLesson!]! @hasMany(relation: "courseLessons")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type Chapter {
+  id: ID!
+  course_id: ID!
+  title: String!
+  description: String
+  position: Int!
+  course: Course! @belongsTo(relation: "course")
+  chapterLessons: [ChapterLesson!]! @hasMany(relation: "chapterLessons")
+  courseLessons: [CourseLesson!]! @belongsToMany(relation: "courseLessons")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type Lesson {
+  id: ID!
+  title: String!
+  content: JSON
+  courseLessons: [CourseLesson!]! @hasMany(relation: "courseLessons")
+  chapterLessons: [ChapterLesson!]! @belongsToMany(relation: "chapterLessons")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type CourseLesson {
+  id: ID!
+  course_id: ID!
+  lesson_id: ID!
+  title: String!
+  content: JSON!
+  source_version: Int!
+  course: Course! @belongsTo(relation: "course")
+  lesson: Lesson! @belongsTo(relation: "lesson")
+  chapters: [Chapter!]! @belongsToMany(relation: "chapters")
+  created_at: DateTime!
+  updated_at: DateTime!
+}
+
+type ChapterLesson {
+  chapter_id: ID!
+  course_lesson_id: ID!
+  position: Int!
+  chapter: Chapter! @belongsTo(relation: "chapter")
+  courseLesson: CourseLesson! @belongsTo(relation: "courseLesson")
+  created_at: DateTime!
+  updated_at: DateTime!
+}

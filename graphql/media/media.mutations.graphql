@@ -1,0 +1,12 @@
+extend type Mutation {
+  uploadMedia(kind: String!, file: Upload!, altText: String, storageLocation: String): Media!
+    @field(resolver: "App\\GraphQL\\Media\\Mutations\\UploadMediaMutation")
+  uploadMediaFromUrl(kind: String!, url: String!, altText: String, storageLocation: String): Media!
+    @field(resolver: "App\\GraphQL\\Media\\Mutations\\UploadMediaFromUrlMutation")
+  bulkUploadMedia(kind: String!, files: [Upload!]!, altText: String, storageLocation: String): [Media!]!
+    @field(resolver: "App\\GraphQL\\Media\\Mutations\\BulkUploadMediaMutation")
+  deleteMedia(ids: [String!]!): DeleteResult!
+    @field(resolver: "App\\GraphQL\\Media\\Mutations\\DeleteMediaMutation")
+  updateStorageLocation(location: String!): StorageResult!
+    @field(resolver: "App\\GraphQL\\Media\\Mutations\\UpdateStorageLocationMutation")
+}

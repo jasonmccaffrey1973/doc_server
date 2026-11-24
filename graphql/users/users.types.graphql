@@ -1,0 +1,15 @@
+type User {
+  id: ID!
+  name: String!
+  email: String!
+}
+
+type UsersMeta {
+  totalCount: Int!
+  filteredCount: Int!
+}
+
+input UsersFilter {
+  field: String!
+  value: String!
+}

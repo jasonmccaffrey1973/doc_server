@@ -1,0 +1,16 @@
+enum SortDirection {
+  ASC
+  DESC
+}
+
+enum UsersSortableField {
+  NAME
+  EMAIL
+  USERNAME
+  CREATED_AT
+}
+
+input UsersSortInput {
+  field: UsersSortableField!
+  direction: SortDirection!
+}

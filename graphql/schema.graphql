@@ -1,6 +1,7 @@
 type Query
 type Mutation
 
+#import ./users/*.graphql
 #import ./common/*.graphql
 #import ./auth/*.graphql
 #import ./navigation/*.graphql

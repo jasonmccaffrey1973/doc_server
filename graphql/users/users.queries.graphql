@@ -1,0 +1,20 @@
+extend type Query {
+  users(
+    after: String
+    first: Int
+    search: String
+    filters: [UsersFilter!]
+    sort: UsersSortInput
+  ): [User!]! @paginate(type: CONNECTION, builder: "App\\GraphQL\\Users\\Queries\\UsersPaginatedQuery@__invoke")
+  usersMeta(
+    search: String
+    filters: [UsersFilter!]
+    sort: UsersSortInput
+  ): UsersMeta! @field(resolver: "App\\GraphQL\\Users\\Queries\\UsersMetaQuery")
+}
+
+
+
+
+
+

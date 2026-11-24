@@ -18,11 +18,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-        ]);
+        // Create a single deterministic test user (optional). Commented out to avoid duplicate email issues.
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'username' => 'testuser',
+        //     'email' => 'test@example.com',
+        // ]);
+
+        // Seed 200 random users
+        User::factory(200)->create();
 
         StorageLocation::firstOrCreate(
             ['name' => 'Default Local Storage'],

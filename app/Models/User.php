@@ -86,6 +86,17 @@ class User extends Authenticatable implements PasskeyUser
                     ['name' => 'Settings', 'path' => '/dashboard/settings', 'visits' => 0],
                 ],
             ],
+            ['name' => 'Users', 'path' => '/admin/users','visits' => 0],
+            [
+                'name' => 'Courses',
+                'visits' => 0,
+                'itemList' => [
+                    ['name' => 'Courses', 'path' => '/admin/courses', 'visits' => 0],
+                    ['name' => 'Chapters', 'path' => '/admin/chapters', 'visits' => 0],
+                    ['name' => 'Lessons', 'path' => '/admin/lessons', 'visits' => 0],
+                    ['name' => 'Quizzes', 'path' => '/admin/quizzes', 'visits' => 0],
+                ],
+            ],
             [
                 'name' => 'Documents',
                 'visits' => 0,

@@ -165,6 +165,30 @@ Resolvers are similarly structured under `App\GraphQL\<Domain>\` (`Queries` and 
 - Queries: `aiVideoProjects`, `aiVideoProject`, `aiVideoGenerationJob`, `aiGeneratedAssets`, `aiProviders`, `aiProviderConnections`
 - Mutations: `createAiVideoProject`, `updateAiVideoProject`, `createAiVideoScene`, `updateAiVideoScene`, `importAiVideo`, `generateAiVideoScript`, `createAiProvider`, `createAIProviderConnection`, `updateAIProviderConnection`, `deleteAIProviderConnection`, `testAIProviderConnection`
 
+#### Users & Pagination
+
+- Query: `users(after: String, first: Int, search: String, filters: [UsersFilter!])` returns a `UserPaginator` with `data` and pagination info.
+- Meta query: `usersMeta` provides total user count.
+- Example query:
+```graphql
+query GetUsers($first: Int!, $after: String) {
+  users(first: $first, after: $after) {
+    data {
+      id
+      name
+      email
+    }
+    paginatorInfo {
+      hasMorePages
+      endCursor
+    }
+  }
+  usersMeta {
+    totalCount
+  }
+}
+```
+
 Open GraphiQL (`/graphiql`) to explore the API during development.
 
 For copy/paste request examples and workflow order, see `graphql/graphiql-examples.md`.

@@ -1,0 +1,29 @@
+input DataGridFilterInput {
+  field: String!
+  value: String!
+}
+
+type DataGridFacetOption {
+  value: String!
+  label: String!
+  count: Int!
+}
+
+type DataGridFacet {
+  field: String!
+  options: [DataGridFacetOption!]!
+  totalCount: Int!
+  hasMore: Boolean!
+}
+
+extend type Query {
+  dataGridFacets(
+    fields: [String!]!
+    search: String
+    filters: [DataGridFilterInput!]
+    facetSearch: String
+    limit: Int = 50
+    offset: Int = 0
+    resource: String = "users"
+  ): [DataGridFacet!]! @field(resolver: "App\\GraphQL\\Common\\Queries\\DataGridFacetsQuery")
+}

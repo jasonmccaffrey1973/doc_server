@@ -4,10 +4,22 @@ namespace App\GraphQL\Users\Queries;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\ValidationException;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
 
 class UsersPaginatedQuery
 {
+    /**
+     * Allowed filterable and facetable fields mapped to database columns.
+     *
+     * @var array<string, string>
+     */
+    public const FILTERABLE_FIELDS = [
+        'name' => 'name',
+        'username' => 'username',
+        'email' => 'email',
+    ];
+
     /**
      * Resolve the paginated users query. Supports search, filters, and sorting.
      *
@@ -36,7 +48,7 @@ class UsersPaginatedQuery
     }
 
     /**
-     * Apply search and filter criteria to a User query builder.
+     * Apply search and validated filter criteria to a User query builder.
      *
      * @param  Builder<User>  $query
      * @param  array<string, mixed>  $args
@@ -54,10 +66,27 @@ class UsersPaginatedQuery
         }
 
         if (! empty($args['filters']) && is_array($args['filters'])) {
+            $groupedFilters = [];
+
             foreach ($args['filters'] as $filter) {
-                if (is_array($filter) && ! empty($filter['field']) && array_key_exists('value', $filter)) {
-                    $query->where($filter['field'], $filter['value']);
+                if (! is_array($filter) || empty($filter['field']) || ! array_key_exists('value', $filter)) {
+                    continue;
                 }
+
+                $field = (string) $filter['field'];
+                $column = self::FILTERABLE_FIELDS[$field] ?? null;
+
+                if ($column === null) {
+                    throw ValidationException::withMessages([
+                        'filters' => ["Invalid filter field: {$field}."],
+                    ]);
+                }
+
+                $groupedFilters[$column][] = $filter['value'];
+            }
+
+            foreach ($groupedFilters as $column => $values) {
+                $query->whereIn($column, $values);
             }
         }
 

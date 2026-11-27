@@ -775,6 +775,61 @@ mutation RemoveAiProviderConnection {
 Connections belong to the signed-in user. Removing a connection deletes its
 encrypted credentials.
 
+## Users DataGrid & Filter Facets
+
+### 1) Cursor-paginated users with search, sort, and meta counts
+
+```graphql
+query GetUsers {
+  users(
+    first: 10
+    search: "pat"
+    sort: { field: NAME, direction: ASC }
+  ) {
+    edges {
+      cursor
+      node {
+        id
+        name
+        email
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+  usersMeta(search: "pat") {
+    totalCount
+    filteredCount
+  }
+}
+```
+
+### 2) Filter facets with option counts, search, and paging
+
+```graphql
+query DataGridFacets {
+  dataGridFacets(
+    fields: ["name", "username"]
+    search: "pat"
+    filters: [{ field: "name", value: "Pat Smith" }]
+    facetSearch: ""
+    limit: 50
+    offset: 0
+  ) {
+    field
+    totalCount
+    hasMore
+    options {
+      value
+      label
+      count
+    }
+  }
+}
+```
+
 ## Logout
 
 ```graphql

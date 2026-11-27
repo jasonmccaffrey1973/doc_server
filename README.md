@@ -132,7 +132,8 @@ See the following docs for more detail:
 
 The GraphQL schema is organized into modular domain directories under `graphql/` and imported into `graphql/schema.graphql`:
 
-- `graphql/common/`: Shared scalar types (`DateTime`, `JSON`, `Upload`)
+- `graphql/common/`: Shared scalar types (`DateTime`, `JSON`, `Upload`) and DataGrid facet queries (`dataGridFacets`)
+- `graphql/users/`: User listing (`users`), metadata (`usersMeta`), and sort/filter inputs
 - `graphql/auth/`: User queries, authentication mutations (`login`, `logout`, `register`, `me`)
 - `graphql/navigation/`: Navigation link queries
 - `graphql/courses/`: LMS authoring queries and mutations (courses, chapters, lessons)
@@ -165,26 +166,64 @@ Resolvers are similarly structured under `App\GraphQL\<Domain>\` (`Queries` and 
 - Queries: `aiVideoProjects`, `aiVideoProject`, `aiVideoGenerationJob`, `aiGeneratedAssets`, `aiProviders`, `aiProviderConnections`
 - Mutations: `createAiVideoProject`, `updateAiVideoProject`, `createAiVideoScene`, `updateAiVideoScene`, `importAiVideo`, `generateAiVideoScript`, `createAiProvider`, `createAIProviderConnection`, `updateAIProviderConnection`, `deleteAIProviderConnection`, `testAIProviderConnection`
 
-#### Users & Pagination
+#### Users, Pagination & Filter Facets
 
-- Query: `users(after: String, first: Int, search: String, filters: [UsersFilter!])` returns a `UserPaginator` with `data` and pagination info.
-- Meta query: `usersMeta` provides total user count.
-- Example query:
+- Query: `users(after: String, first: Int, search: String, filters: [UsersFilter!], sort: UsersSortInput)` returns a Relay-style `UserConnection` (`edges` with `cursor`/`node` and `pageInfo` with `hasNextPage`/`endCursor`). Global `search` is case-insensitive across `name`, `email`, and `username`.
+- Meta query: `usersMeta(search: String, filters: [UsersFilter!], sort: UsersSortInput)` returns `totalCount` and `filteredCount`.
+- Facets query: `dataGridFacets(fields: [String!]!, search: String, filters: [DataGridFilterInput!], facetSearch: String, limit: Int = 50, offset: Int = 0, resource: String = "users")` returns distinct `options` (`value`, `label`, `count`), `totalCount`, and `hasMore` for each allowed field (`name`, `username`, `email`), applying global `search` and active `filters` while excluding each facet's own filter.
+- Example queries:
 ```graphql
-query GetUsers($first: Int!, $after: String) {
-  users(first: $first, after: $after) {
-    data {
-      id
-      name
-      email
+query GetUsers(
+  $first: Int!
+  $after: String
+  $search: String
+  $filters: [UsersFilter!]
+  $sort: UsersSortInput
+) {
+  users(first: $first, after: $after, search: $search, filters: $filters, sort: $sort) {
+    edges {
+      cursor
+      node {
+        id
+        name
+        email
+      }
     }
-    paginatorInfo {
-      hasMorePages
+    pageInfo {
+      hasNextPage
       endCursor
     }
   }
-  usersMeta {
+  usersMeta(search: $search, filters: $filters, sort: $sort) {
     totalCount
+    filteredCount
+  }
+}
+
+query DataGridFacets(
+  $fields: [String!]!
+  $search: String
+  $filters: [DataGridFilterInput!]
+  $facetSearch: String
+  $limit: Int
+  $offset: Int
+) {
+  dataGridFacets(
+    fields: $fields
+    search: $search
+    filters: $filters
+    facetSearch: $facetSearch
+    limit: $limit
+    offset: $offset
+  ) {
+    field
+    totalCount
+    hasMore
+    options {
+      value
+      label
+      count
+    }
   }
 }
 ```
